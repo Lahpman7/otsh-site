@@ -1,24 +1,20 @@
-<?php 
-    // die(getcwd());
+<?php
     require_once(getcwd() . '/vendor/autoload.php');
     $dotenv = new Dotenv\Dotenv(getcwd());
     $dotenv->load();
-    
-    // Google Client info
-    $client_id = getenv('CLIENT_ID');
-    $client_secret = getenv('CLIENT_SECRET');
-    $redirect = getenv('REDIRECT_URI');
+
 class GoogleAuth{
 
     protected $client;
+
     public $account;
     public function __construct(Google_Client $googleClient = null){
         $this->client = $googleClient;
+        // Credentials from environments loaded below
         if($this->client){
-            //echo "Triple Test";
-            $this->client->setClientId($client_id);
-            $this->client->setClientSecret($client_secret);
-            $this->client->setRedirectUri($redirect);
+            $this->client->setClientId(getenv('CLIENT_ID'));
+            $this->client->setClientSecret(getenv('CLIENT_SECRET'));
+            $this->client->setRedirectUri(getenv('REDIRECT_URI'));
             $this->client->setScopes('email');//can change this to profile as well
             //$plus = new Google_Service_Plus($this->client);
         }
@@ -35,11 +31,11 @@ class GoogleAuth{
             $this->setToken($this->client->getAccessToken());
             if(!isset($_SESSION['email'])){
                 $account = $this->getPayLoad();
-                $_SESSION['email'] = $account; 
+                $_SESSION['email'] = $account;
             }
             //die($account);
             //so this does hold the email, which is all we really need, for now at least.
-            //we will try to use the Google_Plus wrapper function next time 
+            //we will try to use the Google_Plus wrapper function next time
             //echo print_r($attrs);
             return true;
         }
@@ -48,20 +44,20 @@ class GoogleAuth{
     public function setToken($tok){
         $_SESSION['access_token'] = $tok;
         $this->client->setAccessToken($tok);//essentially the login method
-        
+
     }
     public function logout(){
         unset($_SESSION['access_token']);
         unset($_SESSION['email']);
     }
     public function getPayLoad(){
-        
+
         //die($this->client->verifyIdToken()['email']);//actually contains info...weird
         //$payload = $this->client->verifyIdToken()->getAttributes();
         //die(var_dump($this->client->verifyIdToken()));
         $payload = $this->client->verifyIdToken()['email'];
         return $payload;
-        
+
     }
 }
 ?>

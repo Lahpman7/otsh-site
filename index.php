@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <?php
-    session_start();
 	require_once("./app/init.php");
 	$googleClient = new Google_Client;
 	$auth = new GoogleAuth($googleClient);
